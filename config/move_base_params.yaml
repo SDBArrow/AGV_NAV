@@ -1,0 +1,15 @@
+shutdown_costmaps: false #不活動時關掉costmaps
+
+recovery_behavior_enabled: false
+clearing_rotation_allowed: false
+
+
+controller_frequency: 3.0   #cmd_vel 命令頻率
+#controller_patience: 3.0  #空間清理操作執行前 控制器花多少時間等待有效控制
+
+#planner_frequency: 1.0 #全局規劃操作的執行頻率 0.0 = 接收到新目標或local賭塞才會重新執行規劃
+#planner_patience: 5.0
+#oscillation_timeout: 8.0
+#oscillation_distance: 0.3
+base_local_planner: "dwa_local_planner/DWAPlannerROS"
+base_global_planner: "global_planner/GlobalPlanner"

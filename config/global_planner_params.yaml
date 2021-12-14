@@ -1,0 +1,15 @@
+GlobalPlanner:
+  allow_unknown: false  #規劃未知區域的路徑
+  default_tolerance: 0.2
+  visualize_potential: false
+  use_dijkstra: false   # true 使用 dijkstra 算法  false 使用 a*算法
+  use_quadratic: true   # true 使用二函數近似函數 false 簡單計算方式節省硬體資源
+  use_grid_path: fasle  # a* true 沿著邊界安排路徑 fasle 梯度下降讓路徑更圓滑 
+  old_navfn_behavior: false
+
+  lethal_cost: 253 #致命代價值
+  neutral_cost: 50 #中等待價值
+  cost_factor: 3.0 #代價地圖與每個代價值相乘的因子
+  publish_potential: true  #發布costmap的勢函數
+  orientation_mode: 0
+  orientation_window_size: 1
