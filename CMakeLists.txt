@@ -15,10 +15,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_srvs
   message_generation
 )
-add_service_files(
-  FILES
-  Person.srv
-)
 
 generate_messages(
   DEPENDENCIES

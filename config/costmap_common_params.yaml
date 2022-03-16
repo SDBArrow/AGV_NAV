@@ -1,9 +1,7 @@
-obstacle_range: 5.5
+obstacle_range: 3 #機器人會把3M內的障礙物作為路徑規劃
 raytrace_range: 6
 footprint: [[-0.3, 0.2225], [-0.3, -0.2225], [0.3, -0.2225], [0.3, 0.2225]]
-# robot_radius: 0.165
-
-#inflation_radius: 0.15
+# robot_radius: 0.165 #機器人半徑
 
 #footprint_inflation: 0.15
 max_obstacle_height: 0
@@ -13,7 +11,6 @@ scan: {sensor_frame: laser, data_type: LaserScan, topic: /scan, marking: true, c
 
 
 unknown_cost_value: -1
-#lethal_cost_threshold: 55
 map_topic: "/map"
 first_map_only: false
 subscription_to_updates: false
@@ -23,10 +20,5 @@ trinary_costmap: true
 
 
 
-
-#00inflation_radius: 0.15
-#00lethal_cost_threshold: 55
-
-
-inflation_radius: 0.4
-lethal_cost_threshold: 60
+inflation_radius: 0.4 #機器人與障礙物保持的最小距離
+lethal_cost_threshold: 55 #從地圖服務器讀取地圖時考慮致命成本的閾值

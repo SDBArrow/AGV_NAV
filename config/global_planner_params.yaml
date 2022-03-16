@@ -1,8 +1,8 @@
 GlobalPlanner:
   allow_unknown: false  #規劃未知區域的路徑
-  default_tolerance: 0.2
+  default_tolerance: 0.2 #當設置的目的地被障礙物佔據時,需要以該參數為半徑尋找到最近的點作為新目的地點.
   visualize_potential: false
-  use_dijkstra: false   # true 使用 dijkstra 算法  false 使用 a*算法
+  use_dijkstra: true   # true 使用 dijkstra 算法  false 使用 a*算法 A* 圖太爛會一直出錯
   use_quadratic: true   # true 使用二函數近似函數 false 簡單計算方式節省硬體資源
   use_grid_path: fasle  # a* true 沿著邊界安排路徑 fasle 梯度下降讓路徑更圓滑 
   old_navfn_behavior: false

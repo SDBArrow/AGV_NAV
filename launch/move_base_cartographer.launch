@@ -1,9 +1,11 @@
 <!--
-use move_base 
+use move_base
 -->
 <launch>
   <!-- rplidar -->
   <include file="$(find rplidar_ros)/launch/rplidar.launch" />
+  <!-- robot_pose -->
+  <!-- node name="agv_robot_pose_publisher" pkg="agv_robot_pose_publisher" type="robot_pose_publisher.cpp" /-->
   <!-- cartographer -->
   <include file="$(find agv_nav)/launch/backpack_2d_localization.launch" />
   <!-- map_server -->
@@ -12,5 +14,7 @@ use move_base
   <include file="$(find agv_nav)/launch/move_base.launch" />
   <!-- rviz -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find agv_nav)/rviz/rviz_navigation.rviz"/>
+  <!-- rosbridge -->
+
 
 </launch>
