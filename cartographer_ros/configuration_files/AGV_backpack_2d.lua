@@ -71,11 +71,11 @@ TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.angular_search_window =
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 1e-1
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight =1e-1
 --為了避免每個子地圖插入太多的掃描數據，一旦掃描匹配器找到了兩個掃描數據之間的運動關係，就會變成運動過濾器。如果本次掃描的運動被認為不夠重要，那麼本次掃描會被分解。一次掃描能夠被插入現代子地圖的替代是它的運動超過了一定的距離，角度或時間閾值。
-TRAJECTORY_BUILDER_2D.motion_filter.max_time_seconds = 2 --調整2後初始定位變快 偏移量便高？
+TRAJECTORY_BUILDER_2D.motion_filter.max_time_seconds = 3 --調整2後初始定位變快 偏移量便高？
 TRAJECTORY_BUILDER_2D.motion_filter.max_distance_meters = 0.2
 TRAJECTORY_BUILDER_2D.motion_filter.max_angle_radians = math.rad(1.)
 
-TRAJECTORY_BUILDER_2D.submaps.num_range_data = 35 --Submaps越小，內部漂移越小；Submaps越大，越有利於全局定位的回環檢測
+TRAJECTORY_BUILDER_2D.submaps.num_range_data = 40 --Submaps越小，內部漂移越小；Submaps越大，越有利於全局定位的回環檢測
 
 POSE_GRAPH.optimization_problem.huber_scale = 1e2
 
