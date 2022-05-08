@@ -4,7 +4,7 @@ GlobalPlanner:
   visualize_potential: false
   use_dijkstra: true   # true 使用 dijkstra 算法  false 使用 a*算法 A* 圖太爛會一直出錯
   use_quadratic: true   # true 使用二函數近似函數 false 簡單計算方式節省硬體資源
-  use_grid_path: fasle  # a* true 沿著邊界安排路徑 fasle 梯度下降讓路徑更圓滑 
+  use_grid_path: true  # a* true 沿著邊界安排路徑 fasle 梯度下降讓路徑更圓滑 
   old_navfn_behavior: false
 
   lethal_cost: 253 #致命代價值
