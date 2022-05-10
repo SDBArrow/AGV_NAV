@@ -1,15 +1,16 @@
-obstacle_range: 0.15 #機器人會把3M內的障礙物作為路徑規劃
-raytrace_range: 6
 footprint: [[0.3, 0.25], [0.3, -0.25], [-0.3, -0.25], [-0.3, 0.25]]
 # robot_radius: 0.165 #機器人半徑
-
 #footprint_inflation: 1
+
+#obstacles 障礙層
+obstacle_range: 2.5 #雷達障礙物插入代價地圖的最大範圍
+raytrace_range: 6 #雷達最大追蹤的障礙範圍
 max_obstacle_height: 0
 min_obstacle_height: 0
 observation_sources: scan
 scan: {sensor_frame: laser, data_type: LaserScan, topic: /scan, marking: true, clearing: true, expected_update_rate: 0}
 
-#staticmap
+#staticmap 靜態層
 unknown_cost_value: -1
 map_topic: "/map"
 first_map_only: true #只訂閱地圖主題的第一條消息，忽略所有後續消息
