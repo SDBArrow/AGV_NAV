@@ -20,8 +20,7 @@ use_maximum: false
 trinary_costmap: true
 lethal_cost_threshold: 100 #從地圖服務器讀取地圖時考慮致命成本的閾值.
 
-
-
 inflation_radius: 0.47 #障礙物膨脹係數
+
 
 
