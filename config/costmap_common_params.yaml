@@ -12,12 +12,12 @@ scan: {sensor_frame: laser, data_type: LaserScan, topic: /scan, marking: true, c
 #staticmap
 unknown_cost_value: -1
 map_topic: "/map"
-first_map_only: true #只訂閱地圖主題的第一條消息，忽略所有後續消息
+first_map_only: false #只訂閱地圖主題的第一條消息，忽略所有後續消息
 subscription_to_updates: false
 track_unknown_space: true
 use_maximum: false
 trinary_costmap: true
-lethal_cost_threshold: 100 #從地圖服務器讀取地圖時考慮致命成本的閾值.
+lethal_cost_threshold: 45 #從地圖服務器讀取地圖時考慮致命成本的閾值.
 
 inflation_radius: 0.47 #障礙物膨脹係數
 
