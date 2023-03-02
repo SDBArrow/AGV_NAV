@@ -1,4 +1,6 @@
 #include <ros/ros.h>
+#include <thread>
+#include <chrono>
 #include <signal.h>
 #include <geometry_msgs/Twist.h>
 #include <tf/transform_listener.h>
@@ -31,36 +33,35 @@ void feedbackCb(const move_base_msgs::MoveBaseFeedbackConstPtr& feedback);
 double computeDistance(geometry_msgs::Point& m_current_point, geometry_msgs::Point& m_goal);
 int destination;
 
+// 循環四點的座標設定
 void init_goalList()
 {
-	//How big is the square we want the robot to navigate?
-	double square_size = 1.5;
-
 	//Create a list to hold the target quaternions (orientations)
 	geometry_msgs::Quaternion quaternions;
 	geometry_msgs::Point point;
 
-	point = setPoint(2.025, -0.869, 0.000);
-	quaternions = setQuaternion( -3.123 );
+	point = setPoint(6.660, 10.800, 0.000);
+	quaternions = setQuaternion( 1.570 );
+	pose_list[0].position = point;
+	pose_list[0].orientation = quaternions;
+
+	point = setPoint(-8.320, 10.100, 0.000);
+	quaternions = setQuaternion( -1.570  );
 	pose_list[1].position = point;
 	pose_list[1].orientation = quaternions;
 
-	point = setPoint(1.503, -5.940, 0.000);
-	quaternions = setQuaternion( 1.573  );
+	point = setPoint(-5.100, 2.700, 0.000);
+	quaternions = setQuaternion( -1.570 );
 	pose_list[2].position = point;
 	pose_list[2].orientation = quaternions;
 
-	point = setPoint(-1.314, -5.820, 0.000);
-	quaternions = setQuaternion( 1.573 );
+	point = setPoint(-9.560, 2.210, 0.000);
+	quaternions = setQuaternion( 3.140 );
 	pose_list[3].position = point;
 	pose_list[3].orientation = quaternions;
-
-	point = setPoint(-2.311, -0.350, 0.000);
-	quaternions = setQuaternion( -0.003 );
-	pose_list[4].position = point;
-	pose_list[4].orientation = quaternions;
 }
 
+//轉換成ros座標格式
 geometry_msgs::Point setPoint(double _x, double _y, double _z)
 {
 	geometry_msgs::Point m_point;
@@ -70,6 +71,7 @@ geometry_msgs::Point setPoint(double _x, double _y, double _z)
 	return m_point;
 }
 
+//轉換成ros四元數格式
 geometry_msgs::Quaternion setQuaternion(double _angleRan)
 {
 	geometry_msgs::Quaternion m_quaternion;
@@ -77,7 +79,7 @@ geometry_msgs::Quaternion setQuaternion(double _angleRan)
 	return m_quaternion;
 }
 
-// Shutdown
+// 關閉node
 void shutdown(int sig)
 {
 	cmdVelPub.publish(geometry_msgs::Twist());
@@ -121,6 +123,7 @@ void feedbackCb(const move_base_msgs::MoveBaseFeedbackConstPtr& feedback)
 	current_point.z = feedback->base_position.pose.position.z;
 }
 
+// 計算當前位置和目標距離
 double computeDistance(geometry_msgs::Point& m_current_point, geometry_msgs::Point& m_goal)
 {
 	double m_distance;
@@ -128,6 +131,72 @@ double computeDistance(geometry_msgs::Point& m_current_point, geometry_msgs::Poi
 	return m_distance;
 }
 
+//四點循環
+void cycle()
+{
+	int count = 0;
+	double distance = 0.0;
+	ros::Rate loop_rate(10);	
+
+	Client ac("move_base", true);
+	move_base_msgs::MoveBaseGoal goal;
+
+	//Use the map frame to define goal poses
+	goal.target_pose.header.frame_id = "map";
+
+	//Set the time stamp(標記) to "now"
+	goal.target_pose.header.stamp = ros::Time::now();
+
+	//清空之前的導航目標
+	ros::NodeHandle node;
+	ros::Publisher cancle_pub_ = node.advertise<actionlib_msgs::GoalID>("move_base/cancel",1);
+	actionlib_msgs::GoalID first_goal;
+	cancle_pub_.publish(first_goal);
+	//重置障礙層
+	ros::ServiceClient client = node.serviceClient<std_srvs::Empty>("/move_base/clear_costmaps");
+	std_srvs::Empty srv;
+	client.call(srv);
+
+	//設定目的地
+	goal.target_pose.pose = pose_list[count];
+	
+	std::this_thread::sleep_for(std::chrono::seconds(1)); // 1s
+	//Start the robot moving toward the goal
+	ac.sendGoal(goal, Client::SimpleDoneCallback(), &activeCb, &feedbackCb);
+
+	while(ros::ok()){
+
+		distance = computeDistance(current_point, goal.target_pose.pose.position);
+		if (distance <= 0.3)
+		{
+			count++;
+			if (count == 4)
+			{
+				count = 0;
+			}
+			
+			//清空之前的導航目標
+			ros::NodeHandle node;
+			ros::Publisher cancle_pub_ = node.advertise<actionlib_msgs::GoalID>("move_base/cancel",1);
+			actionlib_msgs::GoalID first_goal;
+			cancle_pub_.publish(first_goal);
+			//重置障礙層
+			ros::ServiceClient client = node.serviceClient<std_srvs::Empty>("/move_base/clear_costmaps");
+				std_srvs::Empty srv;
+			client.call(srv);
+
+			//設定目的地
+			goal.target_pose.pose = pose_list[count];
+			
+			std::this_thread::sleep_for(std::chrono::seconds(1)); // 1s
+			//Start the robot moving toward the goal
+			ac.sendGoal(goal, Client::SimpleDoneCallback(), &activeCb, &feedbackCb);
+		}
+		loop_rate.sleep();
+	}
+}
+
+//根據收到的地點進行導航
 void dataCallback(const std_msgs::String::ConstPtr& msg)
 {
 	destination = stoi(msg->data);
@@ -150,11 +219,12 @@ void dataCallback(const std_msgs::String::ConstPtr& msg)
 		cancle_pub_.publish(first_goal);
 		//重置障礙層
 		ros::ServiceClient client = node.serviceClient<std_srvs::Empty>("/move_base/clear_costmaps");
-       		std_srvs::Empty srv;
+       	std_srvs::Empty srv;
 		client.call(srv);
 		//設定目的地
 		goal.target_pose.pose = pose_list[destination];
-
+		
+		std::this_thread::sleep_for(std::chrono::seconds(1)); // 1s
 		//Start the robot moving toward the goal
 		ac.sendGoal(goal, Client::SimpleDoneCallback(), &activeCb, &feedbackCb);
 	}
@@ -193,15 +263,18 @@ int main(int argc, char** argv)
 	ROS_INFO("Waiting for move_base action server...");
 
 	//等待action server60秒
-	if (!ac.waitForServer(ros::Duration(60)))
+	if (!ac.waitForServer(ros::Duration(10)))
 	{
 		ROS_INFO("Can't connected to move base server");
 		return 1;
 	}
 	
-	//接收控制訊息 
-	ros::Subscriber sub = node.subscribe("/server_messages", 1000, dataCallback);
+	//四點循環導航
+	cycle();
 
-        ros::spin();
+	//接收目的訊息做導航 
+	//ros::Subscriber sub = node.subscribe("/server_messages", 1000, dataCallback);
+
+	ros::spin();
 	return 0;
 }
